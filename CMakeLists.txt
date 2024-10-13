@@ -6,4 +6,5 @@ set(CMAKE_CXX_STANDARD 23)
 add_executable(simple_mf_video_decode WIN32
         main.cpp
         main_window.cpp
-        mf_video_decoder.cpp)
+        mf_video_decoder.cpp
+        d2d_renderer.cpp)

@@ -50,6 +50,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, 
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         } else {
+            win.render();
         }
         if (msg.message == WM_QUIT) {
             break;

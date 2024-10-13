@@ -4,10 +4,14 @@
 
 #include <atlbase.h>
 #include <atlwin.h>
+#include "d2d_renderer.h"
 
 class main_window : public ATL::CWindowImpl<main_window> {
 public:
     DECLARE_WND_CLASS("main_window");
+
+private:
+    d2d_renderer _renderer;
 
 private:
     BEGIN_MSG_MAP(main_window)
@@ -20,4 +24,6 @@ private:
     LRESULT on_close(UINT msg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT on_destroy(UINT msg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
+public:
+    HRESULT render();
 };
