@@ -11,8 +11,12 @@ mf_video_decoder::mf_video_decoder() noexcept
 
 HRESULT mf_video_decoder::initialize(const wchar_t* url, std::uint32_t stream_index)
 {
+    com_ptr<IMFAttributes> attributes;
+    CHECK_HR(MFCreateAttributes(&attributes, 1));
+    CHECK_HR(attributes->SetUINT32(MF_SOURCE_READER_ENABLE_ADVANCED_VIDEO_PROCESSING, TRUE));
+
     com_ptr<IMFSourceReader> source_reader;
-    CHECK_HR(MFCreateSourceReaderFromURL(url, nullptr, &source_reader));
+    CHECK_HR(MFCreateSourceReaderFromURL(url, attributes.Get(), &source_reader));
     return initialize(source_reader.Get(), stream_index);
 }
 
@@ -26,7 +30,7 @@ HRESULT mf_video_decoder::initialize(IMFSourceReader* source_reader, std::uint32
 
     com_ptr<IMFMediaType> media_type;
 
-    CHECK_HR(MFCreateMediaType(&media_type))
+    CHECK_HR(source_reader->GetCurrentMediaType(stream_index, &media_type));
     CHECK_HR(media_type->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video))
     CHECK_HR(media_type->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB32))
     CHECK_HR(source_reader->SetCurrentMediaType(stream_index, nullptr, media_type.Get()))
@@ -64,22 +68,14 @@ HRESULT mf_video_decoder::read_sample(video_sample_info& info, IMF2DBuffer** buf
     CHECK_HR(sample->GetBufferByIndex(0, &media_buffer));
 
     if (SUCCEEDED(media_buffer->QueryInterface(buffer))) {
-        info = video_sample_info::from_sample(sample.Get());
+        info.width = _width;
+        info.height = _height;
+        sample->GetSampleTime(&info.sample_time);
+        sample->GetSampleDuration(&info.duration);
     } else {
         info = {};
         *buffer = nullptr;
     }
 
     return S_OK;
-}
-
-video_sample_info video_sample_info::from_sample(IMFSample* sample)
-{
-    video_sample_info ret = {};
-    if (sample) {
-        MFGetAttributeSize(sample, MF_MT_FRAME_SIZE, &ret.width, &ret.height);
-        sample->GetSampleTime(&ret.sample_time);
-        sample->GetSampleDuration(&ret.duration);
-    }
-    return ret;
 }

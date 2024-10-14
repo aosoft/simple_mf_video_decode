@@ -11,8 +11,6 @@ struct video_sample_info {
     uint32_t height;
     int64_t sample_time;
     int64_t duration;
-
-    static video_sample_info from_sample(IMFSample* sample);
 };
 
 class mf_video_decoder {

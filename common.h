@@ -9,31 +9,31 @@
 template <class Intf>
 using com_ptr = Microsoft::WRL::ComPtr<Intf>;
 
-#define CHECK_HR(hr)         \
-    {                        \
-        HRESULT hrtmp = hr;  \
-        if (FAILED(hrtmp)) { \
-            _CrtDbgBreak();  \
-            return hrtmp;    \
-        }                    \
+#define CHECK_HR(hr)                                 \
+    {                                                \
+        HRESULT hrtmp = hr;                          \
+        if (FAILED(hrtmp)) {                         \
+            _RPTF1(_CRT_ASSERT, "hr = %08x", hrtmp); \
+            return hrtmp;                            \
+        }                                            \
     }
 
-#define CHECK_HR_THROW(hr)                  \
-    {                                       \
-        HRESULT hrtmp = hr;                 \
-        if (FAILED(hrtmp)) {                \
-            _CrtDbgBreak();                 \
-            throw hresult_exception(hrtmp); \
-        }                                   \
+#define CHECK_HR_THROW(hr)                           \
+    {                                                \
+        HRESULT hrtmp = hr;                          \
+        if (FAILED(hrtmp)) {                         \
+            _RPTF1(_CRT_ASSERT, "hr = %08x", hrtmp); \
+            throw hresult_exception(hrtmp);          \
+        }                                            \
     }
 
-#define CHECK_HR_EXPECTED(hr)              \
-    {                                      \
-        HRESULT hrtmp = hr;                \
-        if (FAILED(hrtmp)) {               \
-            _CrtDbgBreak();                \
-            return std::unexpected(hrtmp); \
-        }                                  \
+#define CHECK_HR_EXPECTED(hr)                        \
+    {                                                \
+        HRESULT hrtmp = hr;                          \
+        if (FAILED(hrtmp)) {                         \
+            _RPTF1(_CRT_ASSERT, "hr = %08x", hrtmp); \
+            return std::unexpected(hrtmp);           \
+        }                                            \
     }
 
 #define CHECK_POINTER(p) CHECK_HR(p != nullptr ? S_OK : E_POINTER);
