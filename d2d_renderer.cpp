@@ -51,7 +51,7 @@ HRESULT d2d_renderer::render(const video_sample_info& info, IMF2DBuffer* buffer)
         auto sg1 = make_scope_guard([buffer] {
             buffer->Unlock2D();
         });
-        _bitmap->CopyFromMemory(nullptr, scan0, pitch);
+        _bitmap->CopyFromMemory(nullptr, scan0, std::abs(pitch));
     }
 
     _render_target->BeginDraw();
