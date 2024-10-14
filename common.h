@@ -3,6 +3,7 @@
 #include <crtdbg.h>
 #include <exception>
 #include <memory>
+#include <optional>
 #include <wrl/client.h>
 
 template <class Intf>
@@ -63,15 +64,40 @@ public:
     }
 };
 
-class co_initializer {
+template <typename Func>
+class scope_guard {
+private:
+    std::optional<Func> _func;
+
 public:
-    co_initializer(DWORD dwCoInit)
+    explicit scope_guard(Func&& func)
+        : _func(std::move(func))
     {
-        ::CoInitializeEx(nullptr, dwCoInit);
+    }
+    scope_guard() = delete;
+    scope_guard(const scope_guard&) = delete;
+    scope_guard(scope_guard&& other)
+        : _func(std::move(other._func))
+    {
+        other._func.reset();
     }
 
-    ~co_initializer()
+    ~scope_guard()
     {
-        ::CoUninitialize();
+        if (_func.has_value()) {
+            _func.value()();
+        }
     }
 };
+
+template <typename Func>
+inline scope_guard<Func> make_defer(Func&& func)
+{
+    return std::move(scope_guard<Func>(std::move(func)));
+}
+
+inline auto co_initialize(DWORD dwCoInit)
+{
+    ::CoInitializeEx(nullptr, dwCoInit);
+    return make_defer([] { ::CoUninitialize(); });
+}

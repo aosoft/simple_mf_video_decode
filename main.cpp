@@ -17,27 +17,20 @@ ATL::CAtlWinModule _Module;
 #pragma comment(lib, "mfuuid.lib")
 #pragma comment(lib, "mfreadwrite.lib")
 
-class mf_initializer {
-private:
-    HRESULT _hr;
-
-public:
-    mf_initializer()
-        : _hr(::MFStartup(MF_VERSION, 0))
-    {
-    }
-    ~mf_initializer()
-    {
-        if (SUCCEEDED(_hr)) {
+inline auto mf_initialize()
+{
+    HRESULT hr = ::MFStartup(MF_VERSION, 0);
+    return make_defer([hr] {
+        if (SUCCEEDED(hr)) {
             ::MFShutdown();
         }
-    }
-};
+    });
+}
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine, int nCmdShow)
 {
-    co_initializer coinit(COINIT_MULTITHREADED);
-    mf_initializer mfinit;
+    auto sg1 = co_initialize(COINIT_MULTITHREADED);
+    auto sg2 = mf_initialize();
 
     main_window win;
     if (win.Create(nullptr, ATL::CWindow::rcDefault, "simple_mf_video_decode", WS_OVERLAPPEDWINDOW) == nullptr) {
