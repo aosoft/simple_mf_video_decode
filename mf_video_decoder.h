@@ -6,6 +6,15 @@
 #include <mfidl.h>
 #include <mfreadwrite.h>
 
+struct video_sample_info {
+    uint32_t width;
+    uint32_t height;
+    int64_t sample_time;
+    int64_t duration;
+
+    static video_sample_info from_sample(IMFSample* sample);
+};
+
 class mf_video_decoder {
 private:
     com_ptr<IMFSourceReader> _source_reader;
@@ -23,4 +32,5 @@ public:
     HRESULT initialize(IMFSourceReader* source_reader, std::uint32_t stream_index = MF_SOURCE_READER_FIRST_VIDEO_STREAM) noexcept;
     void finalize() noexcept;
 
+    HRESULT read_sample(video_sample_info& info, IMF2DBuffer** buffer);
 };
