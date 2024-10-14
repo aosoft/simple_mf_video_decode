@@ -22,6 +22,6 @@ LRESULT main_window::on_destroy(UINT msg, WPARAM wParam, LPARAM lParam, BOOL& bH
 
 HRESULT main_window::render()
 {
-    _renderer.render();
+    //_renderer.render();
     return S_OK;
 }

@@ -20,7 +20,7 @@ ATL::CAtlWinModule _Module;
 inline auto mf_initialize()
 {
     HRESULT hr = ::MFStartup(MF_VERSION, 0);
-    return make_defer([hr] {
+    return make_scope_guard([hr] {
         if (SUCCEEDED(hr)) {
             ::MFShutdown();
         }

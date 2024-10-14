@@ -91,7 +91,7 @@ public:
 };
 
 template <typename Func>
-inline scope_guard<Func> make_defer(Func&& func)
+inline scope_guard<Func> make_scope_guard(Func&& func)
 {
     return std::move(scope_guard<Func>(std::move(func)));
 }
@@ -99,5 +99,5 @@ inline scope_guard<Func> make_defer(Func&& func)
 inline auto co_initialize(DWORD dwCoInit)
 {
     ::CoInitializeEx(nullptr, dwCoInit);
-    return make_defer([] { ::CoUninitialize(); });
+    return make_scope_guard([] { ::CoUninitialize(); });
 }
