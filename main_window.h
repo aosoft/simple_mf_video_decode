@@ -4,6 +4,8 @@
 
 #include <atlbase.h>
 #include <atlwin.h>
+#include <string>
+#include "mf_video_decoder.h"
 #include "d2d_renderer.h"
 
 class main_window : public ATL::CWindowImpl<main_window> {
@@ -11,7 +13,9 @@ public:
     DECLARE_WND_CLASS("main_window");
 
 private:
+    mf_video_decoder _decoder;
     d2d_renderer _renderer;
+    std::wstring _source_file_path;
 
 private:
     BEGIN_MSG_MAP(main_window)
@@ -26,4 +30,8 @@ private:
 
 public:
     HRESULT render();
+    void set_source_file_path(const std::wstring_view& path)
+    {
+        _source_file_path = path;
+    }
 };
